@@ -36,72 +36,92 @@ var spw = 0; // spellworking
 // skills
 var pPerception = 0;
 
-// some object structures
-class race{
-    bonusNonCom = [0, 0, 0, 0, 0, 0];
-    bonusInCom = [0, 0, 0, 0, 0, 0];
-    skills = [];
-}
+// // some object structures
+// class race{
+//     bonusNonCom = [0, 0, 0, 0, 0, 0];
+//     bonusInCom = [0, 0, 0, 0, 0, 0];
+//     skills = [];
+// }
 
-class item{
-    name = "";
-    rarity = 0;
-    weight;
+// class item{
+//     name = "";
+//     rarity = 0;
+//     weight;
     
-    item(name, rarity, weight){
-        name = name;
-        rarity = rarity;
-        weight = weight;
-    }
-}
+//     item(name, rarity, weight){
+//         name = name;
+//         rarity = rarity;
+//         weight = weight;
+//     }
+// }
 
-class weapon extends item{
-    dmgDice;
-    hitBonus;
-    dmgBonus;
+// class weapon extends item{
+//     dmgDice;
+//     hitBonus;
+//     dmgBonus;
 
-    weapon(name, rarity, weight, dice, hitBonus, dmgBonus){
-        super(name, rarity, weight);
-        this.dmgDice = dice;
-        this.hitBonus = hitBonus;
-        this.dmgBonus = dmgBonus;
-    }
-}
+//     weapon(name, rarity, weight, dice, hitBonus, dmgBonus){
+//         super(name, rarity, weight);
+//         this.dmgDice = dice;
+//         this.hitBonus = hitBonus;
+//         this.dmgBonus = dmgBonus;
+//     }
+// }
 
-class armour extends item{
-    type;
-    acBonus = 0;
-    armour(name, rarity, weight, type, acBonus){
-        super(name, rarity, weight);
-        this.type = type;
-        this.acBonus = acBonus
-    }
-}
+// class armour extends item{
+//     type;
+//     acBonus = 0;
+//     armour(name, rarity, weight, type, acBonus){
+//         super(name, rarity, weight);
+//         this.type = type;
+//         this.acBonus = acBonus
+//     }
+// }
 
-class spell{
-    name;
-    description;
-    damage;
-    spell(name, description, damage){
-        this.name = name;
-        this.description = description;
-        this.damage = damage;
-    }
-}
+// class spell{
+//     name;
+//     description;
+//     damage;
+//     spell(name, description, damage){
+//         this.name = name;
+//         this.description = description;
+//         this.damage = damage;
+//     }
+// }
 
-// basic functions
-/**
- * gets a modifier from an ability score (int)
- */
-function modifier(abilityScore){
-    return Math.round(abilityScore/4.0) + 1;
-}
 
-// calculating stats
-inCombatPoints;
-outCombatPoints = BASE_OUT_COMBAT_POINTS + 2 * (level - 1);
-ac = playerArmour.acBonus + BASE_AC;
+// // basic functions
+// /**
+//  * gets a modifier from an ability score (int)
+//  */
+// function modifier(abilityScore){
+//     return Math.round(abilityScore/4.0) + 1;
+// }
+
+// // calculating stats
+// inCombatPoints;
+// outCombatPoints = BASE_OUT_COMBAT_POINTS + 2 * (level - 1);
+// ac = playerArmour.acBonus + BASE_AC;
 
 // 
 
 // JSON file stuff
+
+// making the HTML stuff work
+
+/**
+ * makes the tabs in the sidebar open
+ */
+function openTab(evt, tabName){
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for(i = 0; i < tabcontent.length; i++){
+        tabcontent[i].style.display = "none";
+    }
+    tablinks=document.getElementsByClassName("tablink");
+    for(i = 0 ; i < tablinks.length ; i++){
+        tablinks[i].className = tablinks[i].className.replace(" active", "")
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarger.className += " active";
+}
