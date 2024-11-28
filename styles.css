@@ -123,7 +123,7 @@ body {
 
   /* sidebar styling */
   .sidebar {
-    background-color: #123455;
+    background-color: #ccc;
     margin-left: 1%;
     width: 45.5%
   }
@@ -147,7 +147,7 @@ body {
     background-color: #ddd;
   }
   .tab button:active {
-    background-color: #ccc;
+    background-color: #aaa;
   }
   
   /* tab content styling */

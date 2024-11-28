@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamryn Archives - Character Builder</title>
+</head>
+<body>
+    <div id="background-block" class="extendable">
+        <button class="extend-link" onclick="openLong(event, 'background')">
+            BACKGROUND
+        </button>
+        <div id="background" class="background-content">
+            <div id="name" class="text-input">
+                NAME:
+                <input>
+            </div>
+        </div>
+    </div>
+    <div id="race-block" class="extendable">
+        <button class="extend-link" onclick="openLong(event, 'race')">
+            RACE
+        </button>
+        <div id="race" class="race-content">
+            <div id="name" class="selection">
+                RACE:
+                <li> elves and such (the js should load this in)</li>
+            </div>
+        </div>
+    </div>
+    <div id="class-block" class="extendable">
+        <button class="extend-link" onclick="openLong(event, 'class')">
+            CLASS
+        </button>
+        <div id="class" class="class-content">
+            <div id="name" class="text-input">
+                CLASS:
+                <li>js should also load all the classes here as buttons</li>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
