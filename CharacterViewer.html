@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css">
     <title>Kamryn Archives - Character Viewer</title>
 </head>
-<body onload ="init()">
+<body onload ="characterViewInit()">
     <script src="CharacterViewer.js"></script>
     <!-- Title block with character name and summary - top -->
     <div id="title-block" class="title-block">
@@ -148,12 +148,18 @@
                     <h4>
                         Hit Points
                     </h4>
-                    <input id="current-hp" type="number"><div id="max-hp"></div>
+                    <input id="current-hp" type="number" onchange="p.setHp()"><div id="max-hp"></div>
                 </div>
                 <div id="death-saves-block" class="life-stat-block">
                     <h4>
                         Death Saves
                     </h4>
+                    <input class="success-save" type="checkbox">
+                    <input class="success-save" type="checkbox">
+                    <input class="success-save" type="checkbox">
+                    <input class="failed-save" type="checkbox">
+                    <input class="failed-save" type="checkbox">
+                    <input class="failed-save" type="checkbox">
                 </div>
             </div>
             <!-- passive perception and resistance/statuses - third middle -->  
@@ -185,6 +191,9 @@
                 <button class="tablink" onclick="openTab(event, 'enchantments')">
                     ENCHANTMENTS
                 </button>
+                <button class="tablink" onclick="openTab(event, 'boons')">
+                    BOONS
+                </button>
                 <button class="tablink" onclick="openTab(event, 'skills')">
                     SKILLS
                 </button>
@@ -194,15 +203,14 @@
             </div>
             <!-- Content of the tabs -->
             <div id="actions" class="tabcontent">
-                <h5>
+                <h3>
                     Reactions
-                </h5>
-                <h5>
-                    10 Action Points
-                </h5>
-                <h5>
-                    ...
-                </h5>
+                </h3>
+                <ul id="reaction-list"></ul>
+                <h3>
+                    Actions
+                </h3>
+                <ul id="action-list"></ul>
             </div>
             <div id="spells" class="tabcontent">
                 <h5>
@@ -228,6 +236,12 @@
                         does this
                     </dd>
                 </dl>
+            </div>
+            <div id="boons" class="tabcontent">
+                <h3>Racial Traits</h3>
+                <dl id="race-traits"></dl>
+                <h3>Archetype Boons</h3>
+                <dl id="boon-list"></dl>
             </div>
             <div id="skills" class="tabcontent">
                 <dl id="skill-list"></dl>

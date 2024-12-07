@@ -3,40 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
     <title>Kamryn Archives - Character Builder</title>
 </head>
-<body>
-    <div id="background-block" class="extendable">
-        <button class="extend-link" onclick="openLong(event, 'background')">
-            BACKGROUND
-        </button>
-        <div id="background" class="background-content">
-            <div id="name" class="text-input">
-                NAME:
-                <input>
+<body onload="characterBuildInit()">
+    <script src = "CharacterViewer.js"></script>
+    <div id="building-wrapper" class="wrapper">
+        <!-- the tabs at the top of the sidebar -->
+        <div class="tab">
+            <button class="tablink" onclick="openTab(event, 'background')" complete="false">
+                BACKGROUND
+            </button>
+            <button class="tablink" onclick="openTab(event, 'race')" complete="false">
+                RACE
+            </button>
+            <button class="tablink" onclick="openTab(event, 'noncombat-abilities')" complete="false">
+                NONCOMBAT ABILITIES
+            </button>
+            <button class="tablink" onclick="openTab(event, 'incombat-abilities')" complete="false">
+                IN-COMBAT ABILITIES
+            </button>
+            <button class="tablink" onclick="openTab(event, 'archetypes')" complete="false">
+                ARCHETYPES
+            </button>
+            <button class="tablink" onclick="openTab(event, 'spells')" complete="false">
+                SPELLS
+            </button>
+            <button class="tablink" onclick="openTab(event, 'enchantments')" complete="false">
+                ENCHANTMENTS
+            </button>
+        </div>
+        <!-- Content of the tabs -->
+        <div id="background" class="tabcontent">
+            <div id="name-box">
+                Name: <input id="name-input" required="true" onchange="p.setName()">
+            </div>
+            <div>
+                Backstory: <textarea id="background-input" onchange="p.setBackstory()"></textarea>
             </div>
         </div>
-    </div>
-    <div id="race-block" class="extendable">
-        <button class="extend-link" onclick="openLong(event, 'race')">
-            RACE
-        </button>
-        <div id="race" class="race-content">
-            <div id="name" class="selection">
-                RACE:
-                <li> elves and such (the js should load this in)</li>
+        <div id="race" class="tabcontent"></div>
+        <div id="noncombat-abilities" class="tabcontent">
+            <div id="noncombat-point-box">
+                Noncombat Points
+                <div id="noncombat-point-total-box">
+                    Total
+                    <div id="noncombat-point-total"></div>
+                </div>
+                <div id="noncombat-point-remaining-box">
+                    Remaining
+                    <div id="noncombat-point-remaining"></div>
+                </div>
+            </div>
+            <div id="wild-point-box-nc">
+                Wild Points
+                <div id="wild-point-total-box-nc">
+                    Total
+                    <div id="wild-point-total-nc"></div>
+                </div>
+                <div id="wild-point-remaining-box-nc">
+                    Remaining
+                    <div id="wild-point-remaining-nc"></div>
+                </div>
+            </div>
+            <div id="str-block" class="ability-block">
+                STR
+                <input id="str-input">
+                <div id="str-mod"></div>
+            </div>
+            <div id="dex-block" class="ability-block">
+                DEX
+                <input id="dex-input">
+                <div id="dex-mod"></div>
+            </div>
+            <div id="con-block" class="ability-block">
+                CON
+                <input id="con-input">
+                <div id="con-mod"></div>
+            </div>
+            <div id="int-block" class="ability-block">
+                INT
+                <input id="int-input">
+                <div id="int-mod"></div>
+            </div>
+            <div id="wis-block" class="ability-block">
+                WIS
+                <input id="wis-input">
+                <div id="wis-mod"></div>
+            </div>
+            <div id="cha-block" class="ability-block">
+                CHA
+                <input id="cha-input">
+                <div id="cha-mod"></div>
             </div>
         </div>
-    </div>
-    <div id="class-block" class="extendable">
-        <button class="extend-link" onclick="openLong(event, 'class')">
-            CLASS
-        </button>
-        <div id="class" class="class-content">
-            <div id="name" class="text-input">
-                CLASS:
-                <li>js should also load all the classes here as buttons</li>
+        <div id="incombat-abilities" class="tabcontent">
+            <div id="incombat-point-box">
+                In-Combat Points
+                <div id="incombat-point-total-box">
+                    Total
+                    <div id="incombat-point-total"></div>
+                </div>
+                <div id="incombat-point-remaining-box">
+                    Remaining
+                    <div id="incombat-point-remaining"></div>
+                </div>
             </div>
+            <div id="wild-point-box-ic">
+                Wild Points
+                <div id="wild-point-total-box-ic">
+                    Total
+                    <div id="wild-point-total-ic"></div>
+                </div>
+                <div id="wild-point-remaining-box-ic">
+                    Remaining
+                    <div id="wild-point-remaining-ic"></div>
+                </div>
+            </div>
+            <div id="pow-block" class="ability-block">
+                POW
+                <input onchange="setNonCombatAbility(0)" id="pow-input">
+                <div id="pow-mod"></div>
+            </div>
+            <div id="spe-block" class="ability-block">
+                SPE
+                <input onchange="setNonCombatAbility(1)" id="spe-input">
+                <div id="spe-mod"></div>
+            </div>
+            <div id="fin-block" class="ability-block">
+                FIN
+                <input onchange="setNonCombatAbility(2)" id="fin-input">
+                <div id="fin-mod"></div>
+            </div>
+            <div id="wit-block" class="ability-block">
+                WIT
+                <input onchange="setNonCombatAbility(3)" id="wit-input">
+                <div id="wit-mod"></div>
+            </div>
+            <div id="pre-block" class="ability-block">
+                PRE
+                <input onchange="setNonCombatAbility(4)" id="pre-input">
+                <div id="pre-mod"></div>
+            </div>
+            <div id="spl-block" class="ability-block">
+                SPL
+                <input onchange="setNonCombatAbility(5)" id="spl-input">
+                <div id="spl-mod"></div>
+            </div>
+        </div>
+        <div id="archetypes" class="tabcontent">
+            Level
+            <input id="level-input" type="number" min="1" max="60" onclick="p.setLevel()">
+        </div>
+        <div id="misc" class="tabcontent">
+            <dl>
+                <dt>
+                    This misc thing
+                </dt>
+                <dd>
+                    does this
+                </dd>
+            </dl>
         </div>
     </div>
 </body>
