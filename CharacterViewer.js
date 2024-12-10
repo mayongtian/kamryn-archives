@@ -30,7 +30,7 @@ class Character{
     usedNonCombatPoints = 0;
     inCombatPoints = 30;
     usedInCombatPoints = 0;
-    wildAbiltyPonts = 0;
+    wildAbilityPoints = 0;
     usedWildAbilityPoints = 0;
 
     // in order of STR, DEX, CON, INT, WIS, CHA
@@ -137,12 +137,12 @@ class Character{
             this.usedNonCombatPoints += newScore;
             document.getElementById("noncombat-point-remaining").innerHTML = this.nonCombatPoints - this.usedNonCombatPoints;
         }
-        else if(this.nonCombatPoints + this.wildAbiltyPonts >= this.usedNonCombatPoints + this.usedWildAbilityPoints + this.noncom){
+        else if(this.nonCombatPoints + this.wildAbilityPoints >= this.usedNonCombatPoints + this.usedWildAbilityPoints + this.noncom){
             this.nonCombatAbilities[abilityIdx] = newScore;
             this.usedWildAbilityPoints += newScore - this.nonCombatPoints + this.usedNonCombatPoints
             this.usedNonCombatPoints = this.nonCombatPoints;
             document.getElementById("noncombat-point-remaining").innerHTML = this.nonCombatPoints - this.usedNonCombatPoints;
-            document.getElementById("wild-point-remaining-nc").innerHTML = this.wildAbiltyPonts - this.usedWildAbilityPoints;
+            document.getElementById("wild-point-remaining-nc").innerHTML = this.wildAbilityPoints - this.usedWildAbilityPoints;
         }
         else{
             document.getElementById(`${NON_COMBAT_ABILITES[abilityIdx]}-input`).value = this.nonCombatAbilities[abilityIdx];
@@ -161,12 +161,12 @@ class Character{
             this.usedInCombatPoints += newScore;
             document.getElementById("noncombat-point-remaining").innerHTML = this.inCombatPoints - this.usedInCombatPoints;
         }
-        else if(this.inCombatPoints + this.wildAbiltyPonts >= this.usedInCombatPoints + this.usedWildAbilityPoints + this.noncom){
+        else if(this.inCombatPoints + this.wildAbilityPoints >= this.usedInCombatPoints + this.usedWildAbilityPoints + this.noncom){
             this.inCombatAbilities[abilityIdx] = newScore;
             this.usedWildAbilityPoints += newScore - this.inCombatPoints + this.usedInCombatPoints
             this.usedInCombatPoints = this.inCombatPoints;
             document.getElementById("noncombat-point-remaining").innerHTML = this.inCombatPoints - this.usedInCombatPoints;
-            document.getElementById("wild-point-remaining-nc").innerHTML = this.wildAbiltyPonts - this.usedWildAbilityPoints;
+            document.getElementById("wild-point-remaining-nc").innerHTML = this.wildAbilityPoints - this.usedWildAbilityPoints;
         }
         else{
             document.getElementById(`${IN_COMBAT_ABILITIES[abilityIdx]}-input`).value = this.inCombatAbilities[abilityIdx];
@@ -245,10 +245,51 @@ class Character{
 
     }
 
-    constructor(name, level, race){
-        this.name = name;
-        this.level = level;
-        this.setRace(race);
+    /**
+     * this is super cringe :(
+     * @param {JSONObject} obj 
+     */
+    constructor(obj){
+        console.log(obj.name);
+        this.AC = obj.AC;
+        this.actions = obj.actions;
+        this.advantages = obj.advantages;
+        this.archetypes = obj.archetypes;
+        this.backstory = obj.backstory;
+        this.boonList = obj.boonList;
+        this.currenthp = obj.currenthp;
+        this.disadvantages = obj.disadvantages;
+        this.enchantmentList = obj.enchantmentList;
+        this.failedDeathSaves = obj.failedDeathSaves;
+        this.hp = obj.hp;
+        this.immunities = obj.immunities;
+        this.inCombatAbilities = obj.inCombatAbilities;
+        this.inCombatAbilityBonuses = obj.inCombatAbilityBonuses;
+        this.inCombatAbilityModBonuses = obj.inCombatAbilityModBonuses;
+        this.inCombatPoints = obj.inCombatPoints;
+        this.inititiative = obj.inititiative;
+        this.isEnchanter = obj.isEnchanter;
+        this.isSpellcaster = obj.isSpellcaster;
+        this.itemList = obj.itemList;
+        this.level = obj.level;
+        this.movespeed = obj.movespeed;
+        this.name = obj.name;
+        this.nonCombatAbilities = obj.nonCombatAbilities;
+        this.nonCombatAbilityBonuses = obj.nonCombatAbilityBonuses;
+        this.nonCombatAbilityModBonuses = obj.nonCombatAbilityModBonuses;
+        this.nonCombatPoints = obj.nonCombatPoints;
+        this.pasPerception = obj.pasPerception;
+        this.passiveList = obj.passiveList;
+        this.race = obj.race;
+        this.reactions = obj.reactions;
+        this.resistances = obj.resistances;
+        this.spellList = obj.spellList;
+        this.statusEffects = obj.statusEffects;
+        this.successDeathSaves = obj.successDeathSaves;
+        this.usedInCombatPoints = obj.usedInCombatPoints;
+        this.usedNonCombatPoints = obj.usedNonCombatPoints;
+        this.usedWildAbilityPoints = obj.usedWildAbilityPoints;
+        this.wildAbilityPoints = obj.wildAbilityPoints;
     }
 }
 
@@ -558,7 +599,9 @@ const paladin = new SubArchetype(
 )
 
 // Snapshot of a character for bugtesting
-const p = new Character("Jeff", 4, human);
+var filename = "jeff.JSON";
+
+var p = new Character("Jeff", 4, human);
 p.setArchetype(1, paladin);
 p.setArchetype(4, paladin);
 p.loadBoons();
@@ -831,8 +874,8 @@ function buildRaces(){
 function buildNCAbilities(){
     document.getElementById("noncombat-point-total").innerHTML = p.nonCombatPoints;
     document.getElementById("noncombat-point-remaining").innerHTML = p.nonCombatPoints - p.usedNonCombatPoints;
-    document.getElementById("wild-point-total-nc").innerHTML = p.wildAbiltyPonts;
-    document.getElementById("wild-point-remaining-nc").innerHTML = p.wildAbiltyPonts - p.usedWildAbilityPoints;
+    document.getElementById("wild-point-total-nc").innerHTML = p.wildAbilityPoints;
+    document.getElementById("wild-point-remaining-nc").innerHTML = p.wildAbilityPoints - p.usedWildAbilityPoints;
     document.getElementById("str-input").value = p.nonCombatAbilities[0];
     document.getElementById("dex-input").value = p.nonCombatAbilities[1];
     document.getElementById("con-input").value = p.nonCombatAbilities[2];
@@ -844,8 +887,8 @@ function buildNCAbilities(){
 function buildICAbilities(){
     document.getElementById("incombat-point-total").innerHTML = p.inCombatPoints;
     document.getElementById("incombat-point-remaining").innerHTML = p.inCombatPoints - p.usedInCombatPoints;
-    document.getElementById("wild-point-total-ic").innerHTML = p.wildAbiltyPonts;
-    document.getElementById("wild-point-remaining-ic").innerHTML = p.wildAbiltyPonts - p.usedWildAbilityPoints;
+    document.getElementById("wild-point-total-ic").innerHTML = p.wildAbilityPoints;
+    document.getElementById("wild-point-remaining-ic").innerHTML = p.wildAbilityPoints - p.usedWildAbilityPoints;
     document.getElementById("pow-input").value = p.inCombatAbilities[0];
     document.getElementById("spe-input").value = p.inCombatAbilities[1];
     document.getElementById("fin-input").value = p.inCombatAbilities[2];
@@ -895,13 +938,36 @@ function buildArchetype(boonlv, currentArchs){
 // saving stuff
 
 function setSaveFile(elem){
-    console.log(elem.value);
-    fr = new FileReader();
-    fr.onload = 
-    fr.readAsText()
+    filename = elem.value;
 }
 
 function saveCharacter(){
     let character = JSON.stringify(p);
     console.log(character);
+    download(filename, character);
 }
+
+function loadSaveFile(elem){
+    //let path = elem.value.split("\\");
+    //path = path[path.length - 1];
+    let fr = new FileReader();
+    fr.onload = function(){
+        console.log(JSON.parse(fr.result));
+        p = new Character(JSON.parse(fr.result));
+        characterBuildInit();
+    }
+    fr.readAsText(elem.files[0]);
+}
+
+function download(filename, text) {
+    let element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
+  }

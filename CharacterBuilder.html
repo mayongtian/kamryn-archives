@@ -165,8 +165,11 @@
             ENCHATNMENTS
         </div>
         <div id="save-page" class="tabcontent">
-            <input id="file-input" type="file" onchange="setSaveFile(this)">
-            <button id="save-button" onclick="saveCharacter()">SAVE</button>
+            Load Character
+            <input id="load-file-input" type="file" onchange="loadSaveFile(this)">
+            Save Character
+            <input id="save-file-input" type="text" placeholder="Enter name of file + .JSON" onchange="setSaveFile(this)">
+            <button id="save-button" onclick="saveCharacter()">DOWNLOAD</button>
         </div>
     </div>
 </body>
