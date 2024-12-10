@@ -9,7 +9,7 @@
 <body onload="characterBuildInit()">
     <script src = "CharacterViewer.js"></script>
     <div id="building-wrapper" class="wrapper">
-        <!-- the tabs at the top of the sidebar -->
+        <!-- the tabs at the top of the site -->
         <div class="tab">
             <button class="tablink" onclick="openTab(event, 'background')" complete="false">
                 BACKGROUND
@@ -31,6 +31,9 @@
             </button>
             <button class="tablink" onclick="openTab(event, 'enchantments')" complete="false">
                 ENCHANTMENTS
+            </button>
+            <button class="tablink" onclick="openTab(event, 'save-page')" complete="false">
+                SAVE
             </button>
         </div>
         <!-- Content of the tabs -->
@@ -68,32 +71,32 @@
             </div>
             <div id="str-block" class="ability-block">
                 STR
-                <input id="str-input">
+                <input onchange="p.setNonCombatAbility(0)" type="number" id="str-input">
                 <div id="str-mod"></div>
             </div>
             <div id="dex-block" class="ability-block">
                 DEX
-                <input id="dex-input">
+                <input onchange="p.setNonCombatAbility(1)" type="number" id="dex-input">
                 <div id="dex-mod"></div>
             </div>
             <div id="con-block" class="ability-block">
                 CON
-                <input id="con-input">
+                <input onchange="p.setNonCombatAbility(2)" type="number" id="con-input">
                 <div id="con-mod"></div>
             </div>
             <div id="int-block" class="ability-block">
                 INT
-                <input id="int-input">
+                <input onchange="p.setNonCombatAbility(3)" type="number" id="int-input">
                 <div id="int-mod"></div>
             </div>
             <div id="wis-block" class="ability-block">
                 WIS
-                <input id="wis-input">
+                <input onchange="p.setNonCombatAbility(4)" type="number" id="wis-input">
                 <div id="wis-mod"></div>
             </div>
             <div id="cha-block" class="ability-block">
                 CHA
-                <input id="cha-input">
+                <input onchange="p.setNonCombatAbility(5)" type="number" id="cha-input">
                 <div id="cha-mod"></div>
             </div>
         </div>
@@ -122,32 +125,32 @@
             </div>
             <div id="pow-block" class="ability-block">
                 POW
-                <input onchange="setNonCombatAbility(0)" id="pow-input">
+                <input onchange="p.setInCombatAbility(0)" id="pow-input">
                 <div id="pow-mod"></div>
             </div>
             <div id="spe-block" class="ability-block">
                 SPE
-                <input onchange="setNonCombatAbility(1)" id="spe-input">
+                <input onchange="p.setInCombatAbility(1)" id="spe-input">
                 <div id="spe-mod"></div>
             </div>
             <div id="fin-block" class="ability-block">
                 FIN
-                <input onchange="setNonCombatAbility(2)" id="fin-input">
+                <input onchange="p.setInCombatAbility(2)" id="fin-input">
                 <div id="fin-mod"></div>
             </div>
             <div id="wit-block" class="ability-block">
                 WIT
-                <input onchange="setNonCombatAbility(3)" id="wit-input">
+                <input onchange="p.setInCombatAbility(3)" id="wit-input">
                 <div id="wit-mod"></div>
             </div>
             <div id="pre-block" class="ability-block">
                 PRE
-                <input onchange="setNonCombatAbility(4)" id="pre-input">
+                <input onchange="p.setInCombatAbility(4)" id="pre-input">
                 <div id="pre-mod"></div>
             </div>
             <div id="spl-block" class="ability-block">
                 SPL
-                <input onchange="setNonCombatAbility(5)" id="spl-input">
+                <input onchange="p.setInCombatAbility(5)" id="spl-input">
                 <div id="spl-mod"></div>
             </div>
         </div>
@@ -155,15 +158,15 @@
             Level
             <input id="level-input" type="number" min="1" max="60" onclick="p.setLevel()">
         </div>
-        <div id="misc" class="tabcontent">
-            <dl>
-                <dt>
-                    This misc thing
-                </dt>
-                <dd>
-                    does this
-                </dd>
-            </dl>
+        <div id="spells" class="tabcontent">
+            SPELLS
+        </div>
+        <div id="enchantments" class="tabcontent">
+            ENCHATNMENTS
+        </div>
+        <div id="save-page" class="tabcontent">
+            <input id="file-input" type="file" onchange="setSaveFile(this)">
+            <button id="save-button" onclick="saveCharacter()">SAVE</button>
         </div>
     </div>
 </body>

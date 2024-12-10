@@ -34,12 +34,12 @@ class Character{
     usedWildAbilityPoints = 0;
 
     // in order of STR, DEX, CON, INT, WIS, CHA
-    nonCombatAbilities = [0, 1, 2, 3, 4, 5];
+    nonCombatAbilities = [0, 1, 11, 3, 4, 5];
     nonCombatAbilityBonuses = [0, 0, 0, 0, 0, 0];
     nonCombatAbilityModBonuses = [0, 0, 0, 0, 0, 0];
 
     // in order of POW, SPE, FIN, WIT, PRE, SPL
-    inCombatAbilities = [6, 7, 8, 9, 10, 11];
+    inCombatAbilities = [0, 1, 2, 3, 10, 11];
     inCombatAbilityBonuses = [0, 0, 0, 0, 0, 0];
     inCombatAbilityModBonuses = [0, 0, 0, 0, 0, 0];
 
@@ -62,7 +62,6 @@ class Character{
     race = emptyRace;
 
     archetypes = new Map(); // map of level : subarchetype boon chosen
-    archList = []; // list of subarchetypes
     isSpellcaster = false;
     isEnchanter = false;
 
@@ -131,18 +130,49 @@ class Character{
     setNonCombatAbility(abilityIdx){
         // updates used ability points
         this.usedNonCombatPoints -= this.nonCombatAbilities[abilityIdx];
-        let oldScore = this.nonCombatAbilities[abilityIdx];
-        this.nonCombatAbilities[abilityIdx] = newScore;
-        this.usedNonCombatPoints += newScore;
-        return oldScore;
+        let newScore = parseInt(document.getElementById(`${NON_COMBAT_ABILITES[abilityIdx]}-input`).value);
+        // if we are using noncombatpoints
+        if(this.nonCombatPoints - this.usedNonCombatPoints - newScore >= 0){
+            this.nonCombatAbilities[abilityIdx] = newScore;
+            this.usedNonCombatPoints += newScore;
+            document.getElementById("noncombat-point-remaining").innerHTML = this.nonCombatPoints - this.usedNonCombatPoints;
+        }
+        else if(this.nonCombatPoints + this.wildAbiltyPonts >= this.usedNonCombatPoints + this.usedWildAbilityPoints + this.noncom){
+            this.nonCombatAbilities[abilityIdx] = newScore;
+            this.usedWildAbilityPoints += newScore - this.nonCombatPoints + this.usedNonCombatPoints
+            this.usedNonCombatPoints = this.nonCombatPoints;
+            document.getElementById("noncombat-point-remaining").innerHTML = this.nonCombatPoints - this.usedNonCombatPoints;
+            document.getElementById("wild-point-remaining-nc").innerHTML = this.wildAbiltyPonts - this.usedWildAbilityPoints;
+        }
+        else{
+            document.getElementById(`${NON_COMBAT_ABILITES[abilityIdx]}-input`).value = this.nonCombatAbilities[abilityIdx];
+            this.usedNonCombatPoints += this.nonCombatAbilities[abilityIdx];
+        }
+        setNcModifier(abilityIdx);
     }
 
     setInCombatAbility(abilityIdx){
+        // updates used ability points
         this.usedInCombatPoints -= this.inCombatAbilities[abilityIdx];
-        oldScore = this.inCombatAbilities[abilityIdx];
-        this.inCombatAbilities[abilityIdx] = newScore;
-        this.usedInCombatPoints += newScore;
-        return oldScore;
+        let newScore = parseInt(document.getElementById(`${IN_COMBAT_ABILITIES[abilityIdx]}-input`).value);
+        // if we are using inCombatPoints
+        if(this.inCombatPoints - this.usedInCombatPoints - newScore >= 0){
+            this.inCombatAbilities[abilityIdx] = newScore;
+            this.usedInCombatPoints += newScore;
+            document.getElementById("noncombat-point-remaining").innerHTML = this.inCombatPoints - this.usedInCombatPoints;
+        }
+        else if(this.inCombatPoints + this.wildAbiltyPonts >= this.usedInCombatPoints + this.usedWildAbilityPoints + this.noncom){
+            this.inCombatAbilities[abilityIdx] = newScore;
+            this.usedWildAbilityPoints += newScore - this.inCombatPoints + this.usedInCombatPoints
+            this.usedInCombatPoints = this.inCombatPoints;
+            document.getElementById("noncombat-point-remaining").innerHTML = this.inCombatPoints - this.usedInCombatPoints;
+            document.getElementById("wild-point-remaining-nc").innerHTML = this.wildAbiltyPonts - this.usedWildAbilityPoints;
+        }
+        else{
+            document.getElementById(`${IN_COMBAT_ABILITIES[abilityIdx]}-input`).value = this.inCombatAbilities[abilityIdx];
+            this.usedInCombatPoints += this.inCombatAbilities[abilityIdx];
+        }
+        setNcModifier(abilityIdx);
     }
 
     setAbilityPoints(){
@@ -161,18 +191,24 @@ class Character{
         p.backstory = document.getElementById("backstory-input").value;
     }
 
-    addArchetype(level, subArchetype){
-        if(!this.archList.includes(subArchetype)){
-            this.archList.push(subArchetype);
-        }
+    setArchetype(level, subArchetype){
         this.archetypes.set(level, subArchetype);
+    }
+
+    // getters
+    getArchList(){
+        let archList = [];
+        for(let a of this.archetypes.values()){
+            archList.push(a);
+        }
+        return archList;
     }
 
     //loading stuff liek skills
 
     loadBoons(){
         this.boonList = [];
-        for(let arch of this.archList){
+        for(let arch of this.getArchList()){
             this.boonList.push(arch.parentArchetype.boon);
         }
         for(let [lv, arch] of this.archetypes.entries()){
@@ -317,6 +353,8 @@ class Skill{
 }
 
 class Archetype{
+    static allArchetypes = [];
+    subArchetypes = [];
     name = "";
     description = "";
     boon;
@@ -332,6 +370,7 @@ class Archetype{
         this.description = description;
         this.boon = boon;
         this.threshold = threshold;
+        Archetype.allArchetypes.push(this);
     }
 
     getThreshold(level){
@@ -378,6 +417,7 @@ class SubArchetype{
         this.description = description;
         this.parentArchetype = parentArchetype;
         this.boons = new Map(boons);
+        this.parentArchetype.subArchetypes.push(this);
     }
 }
 
@@ -455,6 +495,17 @@ const tank = new Archetype(
     [0, 0, 9, 0, 0, 0]
 )
 
+const warrior = new Archetype(
+    "Warrior",
+    "Warriors are typically the main source of consistent melee damage, as they have a plethora of different roles that they can take on. Typically, a warrior will use any combination of Power, Wit, Speed or Presence to get them in and out of situations. They also perform stronger with Dexterity, Strength and Intelligence.",
+    warriorInitiative = new Passive(
+        "Warrior's Tradition",
+        "Gain +1 to any combat statistic.",
+        function(p){p.inCombatPoints += 1}
+    ),
+    [9, 0, 0, 0, 0, 0]
+)
+
 // subarchetypes
 const paladin = new SubArchetype(
     "Paladin",
@@ -508,13 +559,28 @@ const paladin = new SubArchetype(
 
 // Snapshot of a character for bugtesting
 const p = new Character("Jeff", 4, human);
-p.addArchetype(1, paladin);
-p.addArchetype(4, paladin);
+p.setArchetype(1, paladin);
+p.setArchetype(4, paladin);
 p.loadBoons();
 p.organiseBoons();
 
 
 // basic functions
+
+/**
+ * 
+ * @param {str} name 
+ * @param {Array} list 
+ * @returns 
+ */
+function getObjectFromName(name, list){
+    for(let i of list){
+        if(i.name == name){
+            return i;
+        }
+    }
+    return -1;
+}
 
 /**
  * @param {int} modifier 
@@ -592,6 +658,31 @@ function openAccordion(evt, accName){
     }
 }
 
+/**
+ * selects the correct arch 
+ * @param {object} elem 
+ * @param {Archetype} arch
+ */
+function selectArch(elem, boonlv){
+    arch = getObjectFromName(elem.value, Archetype.allArchetypes);
+    if(p.getArchList().includes(arch)){
+    }
+    else{
+        selectSubArch(arch, boonlv);
+    }
+
+}
+
+function selectSubArch(arch, boonlv){
+    addElement("h4", "Select Subarchetype", `level-${boonlv}-boon-accordion`, [[]]);
+    addElement("select", "", `level-${boonlv}-boon-accordion`, [["id", `${arch.name}-select-subarch`], ["onchange", "p.setArchetype(boonlv, getObjectFromName(this.value))"]]);
+    for(let s of arch.subArchetypes){
+        addElement("option", s.name, `${arch.name}-select-subarch`, [["id", `${s.name}-option`], ["value", `${s.name}`]]);
+    }
+
+
+}
+
 // HTML stuff for character viewer
 
 /**
@@ -656,7 +747,6 @@ function displayCharacter(){
     }
 
     // actions
-    console.log(p.actions);
     for(let [apCost, actionList] of p.actions.entries()){
         addElement("li", `${apCost} Action Points`, "action-list", [["id", `action-${apCost}-ap`]]);
         addElement("dl", "", `action-${apCost}-ap`, [["id", `action-${apCost}-ap-list`]]);
@@ -671,20 +761,60 @@ function displayCharacter(){
         for(let a of actionList){
             addElement("dt", a.name, `reaction-${apCost}-ap-list`, [[]]);
             addElement("dd", a.description, `reaction-${apCost}-ap-list`, [[]]);
-        }    }
+        }
+    }
 }
 
 // HTML stuff for character builder
-
 /**
  * immediate runtime for characterBuilder
  */
 function characterBuildInit(){
-    // loading name and backstory
-    document.getElementById("name-input").value = p.name;
-    document.getElementById("background-input").value = p.backstory;
+    // building name and backstory
+    buildName();
+    buildBackstory();
 
     // doing the race selection
+    buildRaces();
+
+    // noncombat abilitites
+    buildNCAbilities();
+    
+    // combat 
+    // * the fields for extra modifiers from boons have not been added yet @TODO
+    buildICAbilities();
+
+    // sets modifiers
+    for(let i = 0; i < 6; i ++){
+        setNcModifier(i);
+        setIcModifier(i);
+    }
+    p.setAbilityPoints();
+
+    // archetypes
+    document.getElementById("level-input").value = p.level;
+    let boonlv = 1;
+    let currentArchs = []; // adds archs as they are added
+
+    // doing all the stuff for lv 1 and then multiples of 4
+    while(boonlv <= p.level){
+        buildArchetype(boonlv, currentArchs);
+
+        // indexing
+        boonlv = Math.floor(boonlv/4)*4 + 4;
+    }
+}
+
+// diplay funcitons
+function buildName(){
+    document.getElementById("name-input").value = p.name;
+}
+
+function buildBackstory(){
+    document.getElementById("background-input").value = p.backstory;
+}
+
+function buildRaces(){
     for(let r of Race.allRaces){
         addElement("button", r.name, "race", [["id", `${r.name}-accordion`], ["class", "accordion"], ["onclick", `openAccordion(event, '${r.name}-content')`]]);
         addElement("div", "", "race", [["id", `${r.name}-content`], ["active", "false"]]);
@@ -696,8 +826,9 @@ function characterBuildInit(){
         }
         addElement("button", "SELECT", `${r.name}-content`, [["id", `${r.name}-select`], ["class", "select-button"], ["onclick", `p.setRace(${r.name.toLowerCase()})`]])
     }
+}
 
-    // noncombat abilitites
+function buildNCAbilities(){
     document.getElementById("noncombat-point-total").innerHTML = p.nonCombatPoints;
     document.getElementById("noncombat-point-remaining").innerHTML = p.nonCombatPoints - p.usedNonCombatPoints;
     document.getElementById("wild-point-total-nc").innerHTML = p.wildAbiltyPonts;
@@ -708,9 +839,9 @@ function characterBuildInit(){
     document.getElementById("int-input").value = p.nonCombatAbilities[3];
     document.getElementById("wis-input").value = p.nonCombatAbilities[4];
     document.getElementById("cha-input").value = p.nonCombatAbilities[5];
-    
-    // combat 
-    // * the fields for extra modifiers from boons have not been added yet
+}
+
+function buildICAbilities(){
     document.getElementById("incombat-point-total").innerHTML = p.inCombatPoints;
     document.getElementById("incombat-point-remaining").innerHTML = p.inCombatPoints - p.usedInCombatPoints;
     document.getElementById("wild-point-total-ic").innerHTML = p.wildAbiltyPonts;
@@ -721,13 +852,56 @@ function characterBuildInit(){
     document.getElementById("wit-input").value = p.inCombatAbilities[3];
     document.getElementById("pre-input").value = p.inCombatAbilities[4];
     document.getElementById("spl-input").value = p.inCombatAbilities[5];
+}
 
-    for(let i = 0; i < 6; i ++){
-        setNcModifier(i);
-        setIcModifier(i);
+/**
+ * TODO currently archetype divs dont delete themselves lmao
+ * @param {int} boonlv 
+ * @param {Array} currentArchs 
+ */
+function buildArchetype(boonlv, currentArchs){
+    addElement("div", "", "archetypes", [["id", `level-${boonlv}-boon-accordion`]])
+    addElement("h3", `Level ${boonlv} Boon`, `level-${boonlv}-boon-accordion`, [[]]);
+    addElement("select", "", `level-${boonlv}-boon-accordion`, [["id", `level-${boonlv}-boons`], ["onchange", `selectArch(this, ${boonlv})`]]);
+    for(let a of Archetype.allArchetypes){
+        for(let i = 0; i < 6; i++){
+            if(p.nonCombatAbilities[i] < a.threshold[i]){
+                continue;
+            }
+        }
+        addElement("option", a.name, `level-${boonlv}-boons`, [["id", `level-${boonlv}-${a.name}-option`], ["value", a.name]]);
     }
-    p.setAbilityPoints();
 
-    // archetypes
-    document.getElementById("level-input").value = p.level;
+    let arch = p.archetypes.get(boonlv).parentArchetype;
+    if(p.archetypes.has(boonlv)){
+        document.getElementById(`level-${boonlv}-boons`).value = arch.name;
+        if(!currentArchs.includes(arch)){
+            selectSubArch(arch, boonlv);
+            currentArchs.push(arch);
+        }
+    }
+    let subArch = getObjectFromName(document.getElementById(`${arch.name}-select-subarch`).value, arch.subArchetypes);
+    console.log(subArch);
+
+    if(-1 != subArch){
+        addElement("dl", "", `level-${boonlv}-boon-accordion`, [["id", `level-${boonlv}-${subArch.name}-boon`]]);
+        for(let b of subArch.boons.get(boonlv)){
+            addElement("dt", b.name, `level-${boonlv}-${subArch.name}-boon`, [[]]);
+            addElement("dd", b.description, `level-${boonlv}-${subArch.name}-boon`, [[]]);
+        }
+    }
+}
+
+// saving stuff
+
+function setSaveFile(elem){
+    console.log(elem.value);
+    fr = new FileReader();
+    fr.onload = 
+    fr.readAsText()
+}
+
+function saveCharacter(){
+    let character = JSON.stringify(p);
+    console.log(character);
 }
