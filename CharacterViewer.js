@@ -8,7 +8,7 @@
 const BASE_OUT_COMBAT_ABILITY_POINTS = 40;
 const BASE_AC = 9;
 
-const NON_COMBAT_ABILITES = ["str", "dex", "con", "int", "wis", "cha"];
+const NON_COMBAT_ABILITIES = ["str", "dex", "con", "int", "wis", "cha"];
 
 const IN_COMBAT_ABILITIES = ["pow", "spe", "fin", "wit", "pre", "spl"];
 
@@ -105,6 +105,12 @@ class Character{
         
     setName(){
         p.name = document.getElementById("name-input").value;
+        if(p.name != ""){
+            document.getElementById("background-tab").setAttribute("complete", "t");
+        }
+        else{
+            document.getElementById("background-tab").setAttribute("complete", "f");
+        }
     }
 
     setHp(){
@@ -121,22 +127,30 @@ class Character{
         let elem = document.getElementById("level-input");
         if(0 <= elem.value && 60 >= elem.value){
             this.level = elem.value;
+            for(let lv of this.archetypes.keys()){
+                if(lv > this.level){
+                    this.archetypes.delete(lv);
+                }
+            }
         }
         else{
             elem.value = this.level;
         }
+        // reloads the archetypes tab
     }
 
     setNonCombatAbility(abilityIdx){
         // updates used ability points
         this.usedNonCombatPoints -= this.nonCombatAbilities[abilityIdx];
-        let newScore = parseInt(document.getElementById(`${NON_COMBAT_ABILITES[abilityIdx]}-input`).value);
-        // if we are using noncombatpoints
-        if(this.nonCombatPoints - this.usedNonCombatPoints - newScore >= 0){
+        let newScore = parseInt(document.getElementById(`${NON_COMBAT_ABILITIES[abilityIdx]}-input`).value);
+        // using noncombat points
+        if(newScore <= this.nonCombatPoints - this.usedNonCombatPoints){
             this.nonCombatAbilities[abilityIdx] = newScore;
             this.usedNonCombatPoints += newScore;
+            document.getElementById(`${NON_COMBAT_ABILITIES[abilityIdx]}-total`).innerHTML = newScore + this.nonCombatAbilityBonuses[abilityIdx];
             document.getElementById("noncombat-point-remaining").innerHTML = this.nonCombatPoints - this.usedNonCombatPoints;
         }
+        // using wild points (this is untested)
         else if(this.nonCombatPoints + this.wildAbilityPoints >= this.usedNonCombatPoints + this.usedWildAbilityPoints + this.noncom){
             this.nonCombatAbilities[abilityIdx] = newScore;
             this.usedWildAbilityPoints += newScore - this.nonCombatPoints + this.usedNonCombatPoints
@@ -144,11 +158,13 @@ class Character{
             document.getElementById("noncombat-point-remaining").innerHTML = this.nonCombatPoints - this.usedNonCombatPoints;
             document.getElementById("wild-point-remaining-nc").innerHTML = this.wildAbilityPoints - this.usedWildAbilityPoints;
         }
+        // doing fuck all
         else{
-            document.getElementById(`${NON_COMBAT_ABILITES[abilityIdx]}-input`).value = this.nonCombatAbilities[abilityIdx];
+            document.getElementById(`${NON_COMBAT_ABILITIES[abilityIdx]}-input`).value = this.nonCombatAbilities[abilityIdx];
             this.usedNonCombatPoints += this.nonCombatAbilities[abilityIdx];
         }
         setNcModifier(abilityIdx);
+        nonCombatComplete();
     }
 
     setInCombatAbility(abilityIdx){
@@ -159,8 +175,9 @@ class Character{
         if(this.inCombatPoints - this.usedInCombatPoints - newScore >= 0){
             this.inCombatAbilities[abilityIdx] = newScore;
             this.usedInCombatPoints += newScore;
-            document.getElementById("noncombat-point-remaining").innerHTML = this.inCombatPoints - this.usedInCombatPoints;
+            document.getElementById("incombat-point-remaining").innerHTML = this.inCombatPoints - this.usedInCombatPoints;
         }
+        // using wild points - broken
         else if(this.inCombatPoints + this.wildAbilityPoints >= this.usedInCombatPoints + this.usedWildAbilityPoints + this.noncom){
             this.inCombatAbilities[abilityIdx] = newScore;
             this.usedWildAbilityPoints += newScore - this.inCombatPoints + this.usedInCombatPoints
@@ -168,11 +185,13 @@ class Character{
             document.getElementById("noncombat-point-remaining").innerHTML = this.inCombatPoints - this.usedInCombatPoints;
             document.getElementById("wild-point-remaining-nc").innerHTML = this.wildAbilityPoints - this.usedWildAbilityPoints;
         }
+        // nothing changes
         else{
             document.getElementById(`${IN_COMBAT_ABILITIES[abilityIdx]}-input`).value = this.inCombatAbilities[abilityIdx];
             this.usedInCombatPoints += this.inCombatAbilities[abilityIdx];
         }
-        setNcModifier(abilityIdx);
+        setIcModifier(abilityIdx);
+        inCombatComplete();
     }
 
     setAbilityPoints(){
@@ -209,7 +228,7 @@ class Character{
     loadBoons(){
         this.boonList = [];
         for(let arch of this.getArchList()){
-            this.boonList.push(arch.parentArchetype.boon);
+            this.boonList.push(nameToObject(arch.parentArchetype, Archetype.allArchetypes).boon);
         }
         for(let [lv, arch] of this.archetypes.entries()){
             for(let b of arch.boons.get(lv)){
@@ -250,16 +269,31 @@ class Character{
      * @param {JSONObject} obj 
      */
     constructor(obj){
-        console.log(obj.name);
+        if(undefined == obj){
+            return;
+        }
         this.AC = obj.AC;
-        this.actions = obj.actions;
+        // getting actions
+        this.actions = new Map();
+        for(let [k, a] of obj.actions){
+            this.actions.set(k, new Action(a.name, a.description, false, a.actionPointCost, a.replacedBoons));
+        }
         this.advantages = obj.advantages;
-        this.archetypes = obj.archetypes;
+        this.archetypes = new Map();
+        for(let [k, a] of obj.archetypes){
+            this.archetypes.set(k, new SubArchetype(a.name, a.description, a.parentArchetype, a.boons));
+        }
         this.backstory = obj.backstory;
         this.boonList = obj.boonList;
+        for(b of this.boonList){
+            b = new Boon(b.name, b.description, b.replacedBoons);
+        }
         this.currenthp = obj.currenthp;
         this.disadvantages = obj.disadvantages;
         this.enchantmentList = obj.enchantmentList;
+        for(e of this.enchantmentList){
+            // make e an enchantment
+        }
         this.failedDeathSaves = obj.failedDeathSaves;
         this.hp = obj.hp;
         this.immunities = obj.immunities;
@@ -281,7 +315,10 @@ class Character{
         this.pasPerception = obj.pasPerception;
         this.passiveList = obj.passiveList;
         this.race = obj.race;
-        this.reactions = obj.reactions;
+        this.reactions = new Map();
+        for(let [k, r] of obj.reactions){
+            this.reactions.set(k, new Action(r.name, r.description, true, r.actionPointCost, r.replacedBoons));
+        }
         this.resistances = obj.resistances;
         this.spellList = obj.spellList;
         this.statusEffects = obj.statusEffects;
@@ -456,9 +493,9 @@ class SubArchetype{
     constructor(name, description, parentArchetype, boons){
         this.name = name;
         this.description = description;
-        this.parentArchetype = parentArchetype;
+        this.parentArchetype = parentArchetype.name;
         this.boons = new Map(boons);
-        this.parentArchetype.subArchetypes.push(this);
+        nameToObject(this.parentArchetype, Archetype.allArchetypes).subArchetypes.push(this);
     }
 }
 
@@ -601,7 +638,10 @@ const paladin = new SubArchetype(
 // Snapshot of a character for bugtesting
 var filename = "jeff.JSON";
 
-var p = new Character("Jeff", 4, human);
+var p = new Character();
+p.name = "Jeff";
+p.level = 4;
+p.setRace(human);
 p.setArchetype(1, paladin);
 p.setArchetype(4, paladin);
 p.loadBoons();
@@ -616,13 +656,26 @@ p.organiseBoons();
  * @param {Array} list 
  * @returns 
  */
-function getObjectFromName(name, list){
+function nameToObject(name, list){
     for(let i of list){
         if(i.name == name){
             return i;
         }
     }
     return -1;
+}
+
+/**
+ * turns a map into an array
+ * @param {Map} m 
+ */
+function mapToArray(m){
+    let arr = [];
+    for(i of m.entries()){
+        console.log(i);
+        arr.push(i);
+    }
+    return arr;
 }
 
 /**
@@ -639,14 +692,13 @@ function modifierStr(modifier){
 }
 
 function setNcModifier(abilityIdx){
-    document.getElementById(`${NON_COMBAT_ABILITES[abilityIdx]}-mod`).innerHTML = modifierStr(p.nonCombatModifier(abilityIdx));
+    document.getElementById(`${NON_COMBAT_ABILITIES[abilityIdx]}-mod`).innerHTML = modifierStr(p.nonCombatModifier(abilityIdx));
 }
 
 function setIcModifier(abilityIdx){
     document.getElementById(`${IN_COMBAT_ABILITIES[abilityIdx]}-mod`).innerHTML = modifierStr(p.inCombatModifier(abilityIdx));
 }
 
-// JSON file stuff
 
 // HTML things
 /**
@@ -686,19 +738,70 @@ function openTab(evt, tabName){
 
 /**
  * 
- * @param {PointerEvent} evt 
  * @param {String} accName id of content of accordion
  */
-function openAccordion(evt, accName){
+function openAccordion(accName){
     // if it is active make it inactive
     if(document.getElementById(accName).style.display == "block"){
-        evt.currentTarget.setAttribute("active", false);
         document.getElementById(accName).style.display = "none";
     }
     else{
-        evt.currentTarget.setAttribute("active", "true");
         document.getElementById(accName).style.display = "block";
     }
+}
+
+/**
+ * 
+ * @param {Element} elem 
+ * @param {Race} race 
+ */
+function selectRace(elem, race){
+    if(elem.innerHTML === "SELECT"){
+        p.setRace(race);
+        elem.setAttribute("active", "t");
+        document.getElementById(`${race.name}-accordion`).setAttribute("active", "t");
+        document.getElementById("race-tab").setAttribute("complete", "t");
+        elem.innerHTML = "SELECTED";
+    }
+    for(r of Race.allRaces){
+        if(r != race){
+            document.getElementById(`${r.name}-select`).innerHTML = "SELECT";
+            document.getElementById(`${r.name}-select`).setAttribute("active", "f");
+            document.getElementById(`${r.name}-accordion`).setAttribute("active", "f");
+        }
+    }
+}
+
+function resetNonCombatAbilities(){
+    let total = 0; // total noncombat points used
+    for(let i = 0; i < NON_COMBAT_ABILITIES.length; i++){
+        total += parseInt(document.getElementById(`${NON_COMBAT_ABILITIES[i]}-input`).value);
+        p.nonCombatAbilities[i] = 0;
+        document.getElementById(`${NON_COMBAT_ABILITIES[i]}-input`).value = 0;
+        document.getElementById(`${NON_COMBAT_ABILITIES[i]}-total`).innerHTML = p.nonCombatAbilityBonuses[i];
+        setNcModifier(i);
+    }
+    total -= p.usedNonCombatPoints;
+    p.usedNonCombatPoints = 0;
+    p.usedWildAbilityPoints -= total;
+    document.getElementById("wild-point-remaining-nc").innerHTML = p.wildAbilityPoints - p.usedWildAbilityPoints;
+    document.getElementById("noncombat-point-remaining").innerHTML = p.nonCombatPoints - p.usedNonCombatPoints;
+}
+
+function resetInCombatAbilities(){
+    let total = 0; // total noncombat points used
+    for(let i = 0; i < IN_COMBAT_ABILITIES.length; i++){
+        total += parseInt(document.getElementById(`${IN_COMBAT_ABILITIES[i]}-input`).value);
+        p.inCombatAbilities[i] = 0;
+        document.getElementById(`${IN_COMBAT_ABILITIES[i]}-input`).value = 0;
+        document.getElementById(`${IN_COMBAT_ABILITIES[i]}-total`).innerHTML = p.inCombatAbilityBonuses[i];
+        setIcModifier(i);
+    }
+    total -= p.usedNonCombatPoints;
+    p.usedInCombatPoints = 0;
+    p.usedWildAbilityPoints -= total;
+    document.getElementById("wild-point-remaining-ic").innerHTML = p.wildAbilityPoints - p.usedWildAbilityPoints;
+    document.getElementById("incombat-point-remaining").innerHTML = p.inCombatPoints - p.usedNonCombatPoints;
 }
 
 /**
@@ -707,7 +810,7 @@ function openAccordion(evt, accName){
  * @param {Archetype} arch
  */
 function selectArch(elem, boonlv){
-    arch = getObjectFromName(elem.value, Archetype.allArchetypes);
+    arch = nameToObject(elem.value, Archetype.allArchetypes);
     if(p.getArchList().includes(arch)){
     }
     else{
@@ -718,12 +821,36 @@ function selectArch(elem, boonlv){
 
 function selectSubArch(arch, boonlv){
     addElement("h4", "Select Subarchetype", `level-${boonlv}-boon-accordion`, [[]]);
-    addElement("select", "", `level-${boonlv}-boon-accordion`, [["id", `${arch.name}-select-subarch`], ["onchange", "p.setArchetype(boonlv, getObjectFromName(this.value))"]]);
+    addElement("select", "", `level-${boonlv}-boon-accordion`, [["id", `${arch.name}-select-subarch`], ["onchange", "p.setArchetype(boonlv, nameToObject(this.value))"]]);
     for(let s of arch.subArchetypes){
         addElement("option", s.name, `${arch.name}-select-subarch`, [["id", `${s.name}-option`], ["value", `${s.name}`]]);
     }
+}
 
+/**
+ * Runs every time something is changed in NonCombat Abilities to turn it green lol
+ */
+function nonCombatComplete(){
+    elem = document.getElementById("noncombat-ability-tab");
+    if(p.usedNonCombatPoints == p.nonCombatPoints){
+        elem.setAttribute("complete", "t");
+    }
+    else{
+        elem.setAttribute("complete", "f");
+    }
+}
 
+/**
+ * Runs every time something is changed in InCombat Abilities to turn it green lol
+ */
+function inCombatComplete(){
+    elem = document.getElementById("incombat-ability-tab");
+    if(p.usedInCombatPoints == p.inCombatPoints){
+        elem.setAttribute("complete", "t");
+    }
+    else{
+        elem.setAttribute("complete", "f");
+    }
 }
 
 // HTML stuff for character viewer
@@ -851,6 +978,9 @@ function characterBuildInit(){
 // diplay funcitons
 function buildName(){
     document.getElementById("name-input").value = p.name;
+    if(p.name != ""){
+        document.getElementById("background-tab").setAttribute("complete", "t");
+    }
 }
 
 function buildBackstory(){
@@ -859,15 +989,22 @@ function buildBackstory(){
 
 function buildRaces(){
     for(let r of Race.allRaces){
-        addElement("button", r.name, "race", [["id", `${r.name}-accordion`], ["class", "accordion"], ["onclick", `openAccordion(event, '${r.name}-content')`]]);
-        addElement("div", "", "race", [["id", `${r.name}-content`], ["active", "false"]]);
+        let selected = "SELECT"
+        let isActive = "f";
+        if(p.race == r){
+            selected = "SELECTED";
+            isActive = "t";
+            document.getElementById("race-tab").setAttribute("complete", "t");
+        }
+        addElement("button", r.name, "race", [["id", `${r.name}-accordion`], ["class", "accordion"], ["onclick", `openAccordion('${r.name}-content')`], ["active", isActive]]);
+        addElement("div", "", "race", [["id", `${r.name}-content`], ["active", "false"], ["class", "accordion-content"]]);
         addElement("p", r.description, `${r.name}-content`, [["id", `${r.name}-description`], ["class", "race-description"]]);
         addElement("dl", "", `${r.name}-content`, [["id", `${r.name}-boons`]]);
         for(let t of r.boonList){
             addElement("dt", t.name, `${r.name}-content`, [["id", `${r.name}-${t.name}`]]);
             addElement("dd", t.description, `${r.name}-content`, [["id", `${r.name}-${t.name}-description`]]);
         }
-        addElement("button", "SELECT", `${r.name}-content`, [["id", `${r.name}-select`], ["class", "select-button"], ["onclick", `p.setRace(${r.name.toLowerCase()})`]])
+        addElement("button", selected, `${r.name}-content`, [["id", `${r.name}-select`], ["class", "race-select-button"], ["onclick", `selectRace(this, ${r.name.toLowerCase()})`], ["active",isActive]])
     }
 }
 
@@ -876,12 +1013,16 @@ function buildNCAbilities(){
     document.getElementById("noncombat-point-remaining").innerHTML = p.nonCombatPoints - p.usedNonCombatPoints;
     document.getElementById("wild-point-total-nc").innerHTML = p.wildAbilityPoints;
     document.getElementById("wild-point-remaining-nc").innerHTML = p.wildAbilityPoints - p.usedWildAbilityPoints;
-    document.getElementById("str-input").value = p.nonCombatAbilities[0];
-    document.getElementById("dex-input").value = p.nonCombatAbilities[1];
-    document.getElementById("con-input").value = p.nonCombatAbilities[2];
-    document.getElementById("int-input").value = p.nonCombatAbilities[3];
-    document.getElementById("wis-input").value = p.nonCombatAbilities[4];
-    document.getElementById("cha-input").value = p.nonCombatAbilities[5];
+
+    for(let i = 0; i < NON_COMBAT_ABILITIES.length; i++){
+        addElement("th", `${NON_COMBAT_ABILITIES[i].toUpperCase()}`, "noncombat-headings", []);
+        addElement("td", "", "noncombat-base-scores", [["id", `${NON_COMBAT_ABILITIES[i]}-base-score`]]);
+        addElement("input", "", `${NON_COMBAT_ABILITIES[i]}-base-score`, [["id", `${NON_COMBAT_ABILITIES[i]}-input`], ["type", "number"], ["onchange", `p.setNonCombatAbility(${i})`], ["value", p.nonCombatAbilities[i]]]);
+        addElement("td", modifierStr(p.nonCombatAbilityBonuses[i]), "noncombat-bonuses", []);
+        addElement("td", p.nonCombatAbilities[i] + p.nonCombatAbilityBonuses[i], "noncombat-totals", [["id", `${NON_COMBAT_ABILITIES[i]}-total`]]);
+        addElement("td", "", "noncombat-modifiers", [["id", `${NON_COMBAT_ABILITIES[i]}-mod`]]);
+        setNcModifier(i);
+    }
 }
 
 function buildICAbilities(){
@@ -889,12 +1030,16 @@ function buildICAbilities(){
     document.getElementById("incombat-point-remaining").innerHTML = p.inCombatPoints - p.usedInCombatPoints;
     document.getElementById("wild-point-total-ic").innerHTML = p.wildAbilityPoints;
     document.getElementById("wild-point-remaining-ic").innerHTML = p.wildAbilityPoints - p.usedWildAbilityPoints;
-    document.getElementById("pow-input").value = p.inCombatAbilities[0];
-    document.getElementById("spe-input").value = p.inCombatAbilities[1];
-    document.getElementById("fin-input").value = p.inCombatAbilities[2];
-    document.getElementById("wit-input").value = p.inCombatAbilities[3];
-    document.getElementById("pre-input").value = p.inCombatAbilities[4];
-    document.getElementById("spl-input").value = p.inCombatAbilities[5];
+
+    for(let i = 0; i < IN_COMBAT_ABILITIES.length; i++){
+        addElement("th", `${IN_COMBAT_ABILITIES[i].toUpperCase()}`, "incombat-headings", []);
+        addElement("td", "", "incombat-base-scores", [["id", `${IN_COMBAT_ABILITIES[i]}-base-score`]]);
+        addElement("input", "", `${IN_COMBAT_ABILITIES[i]}-base-score`, [["id", `${IN_COMBAT_ABILITIES[i]}-input`], ["type", "number"], ["onchange", `p.setInCombatAbility(${i})`], ["value", p.inCombatAbilities[i]]]);
+        addElement("td", modifierStr(p.inCombatAbilityBonuses[i]), "incombat-bonuses", []);
+        addElement("td", p.inCombatAbilities[i] + p.inCombatAbilityBonuses[i], "incombat-totals", [["id", `${IN_COMBAT_ABILITIES[i]}-total`]]);
+        addElement("td", "", "incombat-modifiers", [["id", `${IN_COMBAT_ABILITIES[i]}-mod`]]);
+        setIcModifier(i);
+    }
 }
 
 /**
@@ -903,7 +1048,7 @@ function buildICAbilities(){
  * @param {Array} currentArchs 
  */
 function buildArchetype(boonlv, currentArchs){
-    addElement("div", "", "archetypes", [["id", `level-${boonlv}-boon-accordion`]])
+    addElement("div", "", "archetypes", [["id", `level-${boonlv}-boon-accordion`]]);
     addElement("h3", `Level ${boonlv} Boon`, `level-${boonlv}-boon-accordion`, [[]]);
     addElement("select", "", `level-${boonlv}-boon-accordion`, [["id", `level-${boonlv}-boons`], ["onchange", `selectArch(this, ${boonlv})`]]);
     for(let a of Archetype.allArchetypes){
@@ -915,7 +1060,7 @@ function buildArchetype(boonlv, currentArchs){
         addElement("option", a.name, `level-${boonlv}-boons`, [["id", `level-${boonlv}-${a.name}-option`], ["value", a.name]]);
     }
 
-    let arch = p.archetypes.get(boonlv).parentArchetype;
+    let arch = nameToObject(p.archetypes.get(boonlv).parentArchetype, Archetype.allArchetypes);
     if(p.archetypes.has(boonlv)){
         document.getElementById(`level-${boonlv}-boons`).value = arch.name;
         if(!currentArchs.includes(arch)){
@@ -923,8 +1068,7 @@ function buildArchetype(boonlv, currentArchs){
             currentArchs.push(arch);
         }
     }
-    let subArch = getObjectFromName(document.getElementById(`${arch.name}-select-subarch`).value, arch.subArchetypes);
-    console.log(subArch);
+    let subArch = nameToObject(document.getElementById(`${arch.name}-select-subarch`).value, arch.subArchetypes);
 
     if(-1 != subArch){
         addElement("dl", "", `level-${boonlv}-boon-accordion`, [["id", `level-${boonlv}-${subArch.name}-boon`]]);
@@ -935,6 +1079,11 @@ function buildArchetype(boonlv, currentArchs){
     }
 }
 
+// resetting stuff
+function resetBuilder(){
+
+}
+
 // saving stuff
 
 function setSaveFile(elem){
@@ -942,8 +1091,17 @@ function setSaveFile(elem){
 }
 
 function saveCharacter(){
-    let character = JSON.stringify(p);
-    console.log(character);
+    let character = JSON.stringify(p, function(key, value){
+        if(key == "archetypes"){
+            let v = mapToArray(value);
+            console.log(v);
+            return v;
+        }
+        else if(key == "actions") return mapToArray(value);
+        else if(key == "reactions") return mapToArray(value);
+        else return value;
+    });
+    // console.log(character);
     download(filename, character);
 }
 
@@ -952,13 +1110,19 @@ function loadSaveFile(elem){
     //path = path[path.length - 1];
     let fr = new FileReader();
     fr.onload = function(){
-        console.log(JSON.parse(fr.result));
         p = new Character(JSON.parse(fr.result));
+        resetBuilder();
         characterBuildInit();
     }
     fr.readAsText(elem.files[0]);
 }
 
+
+/**
+ * https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server
+ * @param {str} filename 
+ * @param {str} text 
+ */
 function download(filename, text) {
     let element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));

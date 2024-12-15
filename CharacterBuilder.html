@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="characterBuilder.css">
     <title>Kamryn Archives - Character Builder</title>
 </head>
 <body onload="characterBuildInit()">
@@ -11,28 +11,28 @@
     <div id="building-wrapper" class="wrapper">
         <!-- the tabs at the top of the site -->
         <div class="tab">
-            <button class="tablink" onclick="openTab(event, 'background')" complete="false">
+            <button id="background-tab" class="tablink" onclick="openTab(event, 'background')" complete="f">
                 BACKGROUND
             </button>
-            <button class="tablink" onclick="openTab(event, 'race')" complete="false">
+            <button id="race-tab" class="tablink" onclick="openTab(event, 'race')" complete="f">
                 RACE
             </button>
-            <button class="tablink" onclick="openTab(event, 'noncombat-abilities')" complete="false">
+            <button id="noncombat-ability-tab" class="tablink" onclick="openTab(event, 'noncombat-abilities')" complete="f">
                 NONCOMBAT ABILITIES
             </button>
-            <button class="tablink" onclick="openTab(event, 'incombat-abilities')" complete="false">
+            <button id="incombat-ability-tab" class="tablink" onclick="openTab(event, 'incombat-abilities')" complete="f">
                 IN-COMBAT ABILITIES
             </button>
-            <button class="tablink" onclick="openTab(event, 'archetypes')" complete="false">
+            <button class="tablink" onclick="openTab(event, 'archetypes')" complete="f">
                 ARCHETYPES
             </button>
-            <button class="tablink" onclick="openTab(event, 'spells')" complete="false">
+            <button class="tablink" onclick="openTab(event, 'spells')" complete="f">
                 SPELLS
             </button>
-            <button class="tablink" onclick="openTab(event, 'enchantments')" complete="false">
+            <button class="tablink" onclick="openTab(event, 'enchantments')" complete="f">
                 ENCHANTMENTS
             </button>
-            <button class="tablink" onclick="openTab(event, 'save-page')" complete="false">
+            <button class="tablink" onclick="openTab(event, 'save-page')" complete="f">
                 SAVE
             </button>
         </div>
@@ -47,111 +47,89 @@
         </div>
         <div id="race" class="tabcontent"></div>
         <div id="noncombat-abilities" class="tabcontent">
-            <div id="noncombat-point-box">
-                Noncombat Points
-                <div id="noncombat-point-total-box">
-                    Total
-                    <div id="noncombat-point-total"></div>
+            <div id="nc-block" class="inline-block">
+                <div id="nc-left-block" class="left-block">
+                    <div id="noncombat-point-box" class="ability-point-box">
+                        Non-combat Points
+                        <div id="noncombat-point-display" class="ability-point-display">
+                            <span id="noncombat-point-remaining"></span>/<span id="noncombat-point-total"></span>
+                        </div>
+                    </div>
+                    <div id="wild-point-box-nc" class="ability-point-box">
+                        Wild Points
+                        <div id="wild-point-display" class="ability-point-display">
+                            <span id="wild-point-remaining-nc"></span>/<span id="wild-point-total-nc"></span>
+                        </div>
+                    </div>
                 </div>
-                <div id="noncombat-point-remaining-box">
-                    Remaining
-                    <div id="noncombat-point-remaining"></div>
-                </div>
-            </div>
-            <div id="wild-point-box-nc">
-                Wild Points
-                <div id="wild-point-total-box-nc">
-                    Total
-                    <div id="wild-point-total-nc"></div>
-                </div>
-                <div id="wild-point-remaining-box-nc">
-                    Remaining
-                    <div id="wild-point-remaining-nc"></div>
-                </div>
-            </div>
-            <div id="str-block" class="ability-block">
-                STR
-                <input onchange="p.setNonCombatAbility(0)" type="number" id="str-input">
-                <div id="str-mod"></div>
-            </div>
-            <div id="dex-block" class="ability-block">
-                DEX
-                <input onchange="p.setNonCombatAbility(1)" type="number" id="dex-input">
-                <div id="dex-mod"></div>
-            </div>
-            <div id="con-block" class="ability-block">
-                CON
-                <input onchange="p.setNonCombatAbility(2)" type="number" id="con-input">
-                <div id="con-mod"></div>
-            </div>
-            <div id="int-block" class="ability-block">
-                INT
-                <input onchange="p.setNonCombatAbility(3)" type="number" id="int-input">
-                <div id="int-mod"></div>
-            </div>
-            <div id="wis-block" class="ability-block">
-                WIS
-                <input onchange="p.setNonCombatAbility(4)" type="number" id="wis-input">
-                <div id="wis-mod"></div>
-            </div>
-            <div id="cha-block" class="ability-block">
-                CHA
-                <input onchange="p.setNonCombatAbility(5)" type="number" id="cha-input">
-                <div id="cha-mod"></div>
+                <table id="noncombat-ability-table" class="ability-table">
+                    <thead>
+                        <tr id="noncombat-headings">
+                            <th>Ability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="noncombat-base-scores">
+                            <th>Base Score</th>
+                        </tr>
+                        <!-- <input onchange="p.setNonCombatAbility(5)" type="number" id="cha-input"> -->
+                        <tr id="noncombat-bonuses">
+                            <th>Bonuses</th>
+                        </tr>
+                        <tr id="noncombat-totals">
+                            <th>Total</th>
+                        </tr>
+                        <tfoot>
+                            <tr id="noncombat-modifiers">
+                                <th>Modifier</th>
+                            </tr>
+                        </tfoot>
+                    </tbody>
+                </table>
+                <button id="noncombat-reset-button" class="ability-reset-button" onclick="resetNonCombatAbilities()">RESET ALL ABILITIES</button>
             </div>
         </div>
         <div id="incombat-abilities" class="tabcontent">
-            <div id="incombat-point-box">
-                In-Combat Points
-                <div id="incombat-point-total-box">
-                    Total
-                    <div id="incombat-point-total"></div>
+            <div id="ic-block" class="inline-block">
+                <div id="ic-left-block" class="left-block">
+                    <div id="incombat-point-box" class="ability-point-box">
+                        In-combat Points
+                        <div id="incombat-point-display" class="ability-point-display">
+                            <span id="incombat-point-remaining"></span>/<span id="incombat-point-total"></span>
+                        </div>
+                    </div>
+                    <div id="wild-point-box-ic" class="ability-point-box">
+                        Wild Points
+                        <div id="wild-point-display" class="ability-point-display">
+                            <span id="wild-point-remaining-ic"></span>/<span id="wild-point-total-ic"></span>
+                        </div>
+                    </div>
                 </div>
-                <div id="incombat-point-remaining-box">
-                    Remaining
-                    <div id="incombat-point-remaining"></div>
-                </div>
-            </div>
-            <div id="wild-point-box-ic">
-                Wild Points
-                <div id="wild-point-total-box-ic">
-                    Total
-                    <div id="wild-point-total-ic"></div>
-                </div>
-                <div id="wild-point-remaining-box-ic">
-                    Remaining
-                    <div id="wild-point-remaining-ic"></div>
-                </div>
-            </div>
-            <div id="pow-block" class="ability-block">
-                POW
-                <input onchange="p.setInCombatAbility(0)" id="pow-input">
-                <div id="pow-mod"></div>
-            </div>
-            <div id="spe-block" class="ability-block">
-                SPE
-                <input onchange="p.setInCombatAbility(1)" id="spe-input">
-                <div id="spe-mod"></div>
-            </div>
-            <div id="fin-block" class="ability-block">
-                FIN
-                <input onchange="p.setInCombatAbility(2)" id="fin-input">
-                <div id="fin-mod"></div>
-            </div>
-            <div id="wit-block" class="ability-block">
-                WIT
-                <input onchange="p.setInCombatAbility(3)" id="wit-input">
-                <div id="wit-mod"></div>
-            </div>
-            <div id="pre-block" class="ability-block">
-                PRE
-                <input onchange="p.setInCombatAbility(4)" id="pre-input">
-                <div id="pre-mod"></div>
-            </div>
-            <div id="spl-block" class="ability-block">
-                SPL
-                <input onchange="p.setInCombatAbility(5)" id="spl-input">
-                <div id="spl-mod"></div>
+                <table id="incombat-ability-table" class="ability-table">
+                    <thead>
+                        <tr id="incombat-headings">
+                            <th>Ability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="incombat-base-scores">
+                            <th>Base Score</th>
+                        </tr>
+                        <!-- <input onchange="p.setinCombatAbility(5)" type="number" id="cha-input"> -->
+                        <tr id="incombat-bonuses">
+                            <th>Bonuses</th>
+                        </tr>
+                        <tr id="incombat-totals">
+                            <th>Total</th>
+                        </tr>
+                        <tfoot>
+                            <tr id="incombat-modifiers">
+                                <th>Modifier</th>
+                            </tr>
+                        </tfoot>
+                    </tbody>
+                </table>
+                <button id="incombat-reset-button" class="ability-reset-button" onclick="resetInCombatAbilities()">RESET ALL ABILITIES</button>
             </div>
         </div>
         <div id="archetypes" class="tabcontent">
