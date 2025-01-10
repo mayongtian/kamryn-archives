@@ -136,3 +136,15 @@ div {
 .ability-reset-button:active{
     background-color: red;
 }
+
+/* archetype page */
+.archetype-select-button{
+    width: 100%;
+    height: 30px;
+    margin-top: 10px;
+    background-color: #777;
+}
+
+.archetype-select-button[active="t"]{
+    background-color: green;
+}

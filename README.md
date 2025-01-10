@@ -4,24 +4,34 @@ Kamryn Archives is a HTML-based local character builder for the Kamryn Chronicle
 
 ## Usage notes
 
-### File-Handling
-Because of JavaScript's bullshit issues in handling files, the file will always be downloaded to your default download folder. It can be selected again to load (I think)
-- that part of the code was lifted off of StackExchange so I'm honestly not sure how it reads the file, just that it works lol
-
 ### Actual Instructions
 Open KamrynArchives.html. It will lead you to the right places. Don't mess with anything else.
 
+### File-Handling
+Because of JavaScript's bullshit issues in handling files, the file will always be downloaded to your default download folder. It can be selected again to load.
+- that part of the code was lifted off of StackExchange so I'm honestly not sure how it reads the file, just that it works lol
+
 ## Architecture notes
 ### Tedious Data input
-Since I want to outsource the stuff to friends I think I will have to make some sort of JSON file for each spell and write a python script.
-But that makes the file wayyy too big so maybe I just make the python script write in JS and then copy-paste it in???
-i dont want a js file that is 50000 lines tho :|
 
-## Data Progress
+### TODO priority list
+- make the HTML documents link properly
+- make the passive effects work
+- make the maths work
+- make a python script that allows the races and subarchetypes to work
+- do data entry
+- get someone to bugcheck - im still not confident that files work the same way on windows computers ;-;
+#### Future Updates
+- make spells work
+- make enchantments work
+- make items work
+
+## Data Entry Progress
 - Spells are nonexistent
 - The tank and warrior archetypes exist, nothing else
-- only the paladin subarchetype exists, and only until level 12
-- none of the passive effects (stat changes) exist
+- the paladin subarchetype exists, and only until level 12
+- the knight subarchetype exists till lv 1
+- the frontline diver subarchetype exists till lv1
 - equipment does not exist
 - enchantments do not exist
 - formatting is cringe
@@ -30,9 +40,11 @@ i dont want a js file that is 50000 lines tho :|
 
 ## Bugs
 ### File Handling
-- Does not work yet - I'm working on making the json object actually translate into a player object
-    - the problem appears to lie in the Maps - JSON does not appear to like maps.
 ### Builder
-- The race selection accordions are doing something profoundly strange - check in with them ig
+- the class accordions are very very very bugged :||| - if i have bugtesters hopefully they can start to figure out why
+- i think something is wrong with setLevel
+- speaking of which changing the level does not change the number of ability points
+- uploading a character only works half the time (?????)
 ### Viewer
 ### General
+- None of the passive effects are ever applied, and a lot of them may be bugged.

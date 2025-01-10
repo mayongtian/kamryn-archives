@@ -1,0 +1,34 @@
+<!-- This is where ALL the HTML will eventually be :|-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/main.css">
+    <link id="style" rel="stylesheet" href="css/titleScreen.css">
+    <title>Kamryn Archives</title>
+</head>
+<body onload="titleScreenInit()" id="body">
+    <script src = "js/Main.js"></script>
+    <script src="js/ClassDefinitions.js"></script>
+    <script src="js/Boons.js"></script>
+    <script src="js/Races.js"></script>
+    <script src="js/Archetypes.js"></script>
+    <script src="js/SubArchetypes.js"></script>
+    <script src="js/TitleScreen.js"></script>
+    <script src="js/CharacterBuilder.js"></script>
+    <script src="js/CharacterViewer.js"></script>
+
+    <div id="file-input">
+        Select file to load
+        <input type="file" onchange="setLoadFile(this)">
+    </div>
+    <div>
+        <button id="edit-character" onclick="editLoadedCharacter()">Edit Loaded Character</button>
+        <button id="view-character" onclick="viewLoadedCharacter()">View Loaded Character</button>
+    </div>
+    <div>
+        <button id="create-new-character" onclick="createNewCharacter()">Create New Character</button>
+    </div>
+</body>
+</html>

@@ -3,11 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="characterViewer.css">
+    <link rel="stylesheet" href="css/characterViewer.css">
     <title>Kamryn Archives - Character Viewer</title>
 </head>
-<body onload ="characterViewInit()">
-    <script src="CharacterViewer.js"></script>
+<body onload ="createCharacter(); characterViewInit();">
+    <script src = "js/Main.js"></script>
+    <script src="js/ClassDefinitions.js"></script>
+    <script src="js/Boons.js"></script>
+    <script src="js/Races.js"></script>
+    <script src="js/Archetypes.js"></script>
+    <script src="js/SubArchetypes.js"></script>
+    <script src="js/CharacterViewer.js"></script>
+
     <!-- Title block with character name and summary - top -->
     <div id="title-block" class="title-block">
         <h1 id="character-name" class="heading">name</h1>
@@ -109,9 +116,7 @@
             </div>
             <!-- languages, proficiencies, etc - bottom left -->
             <div id="language-text" class="proficiencies-block">
-                <p>
-                    Languages
-                </p>
+                <p>Languages</p>
             </div>
         </div>
         <div id="column-2" class="column-2">
