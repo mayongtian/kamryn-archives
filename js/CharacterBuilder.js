@@ -89,12 +89,24 @@ function inCombatComplete(){
  */
 function characterBuildInit(){
     // loads p in
-    if(location.search == "?0"){
-        console.log("ababa");
-
+    let mode = sessionStorage.getItem("mode");
+    if("0" == mode){
+        p = new Character();
+    }
+    else if("1" == mode){
+        let b = localStorage.getItem("character");
+        if(b == null){
+            console.log("something went wrong againnnnnn");
+        }
+        console.log(b);
+        p = new Character(JSON.parse(localStorage.getItem("character")));
+    }
+    else if("2" == mode){
+        
     }
     else{
-        //loadCharacter
+        //spit error
+        console.log("mode should not be ", mode);
     }
     // building name and backstory
     buildName();
@@ -218,7 +230,9 @@ function buildBoon(boonlv, currentArchs){
     addElement("button", "Select Archetype", `level-${boonlv}-boon-content`, [["id", `level-${boonlv}-archetype-selection-accordion`], ["class", "accordion"], ["onclick", `openAccordion("level-${boonlv}-archetype-selection-content")`]]);
     addElement("div", "", `level-${boonlv}-boon-content`, [["id", `level-${boonlv}-archetype-selection-content`], ["class", "accordion-content"]]);
     addElement("dl", "", `level-${boonlv}-boon-content`, [["id", `level-${boonlv}-boon-description`]]);
+    
     for(let a of Archetype.allArchetypes){
+        console.log(a.name);
         addElement("button", a.name, `level-${boonlv}-archetype-selection-content`, [["id", `level-${boonlv}-${a.name}-accordion`], ["class", "accordion"], ["onclick", `openAccordion("level-${boonlv}-${a.name}-content")`]]);
         addElement("div", "", `level-${boonlv}-archetype-selection-content`, [["id", `level-${boonlv}-${a.name}-content`], ["class", "accordion-content"]]);
 
@@ -258,16 +272,20 @@ function buildBoon(boonlv, currentArchs){
             }
             let sa = p.archetypes.get(boonlv);
             
-            // if there is no subarchetype selected
+            // if there is a subarchetype selected
             if(sa != null){
                 subArch = sa.name;
                 e.value = subArch;
                 d.innerHTML = "";
                 selected = "SELECTED"
                 s = nameToObject(subArch, a.subArchetypes);
-                boonSummary(s, boonlv, d.id);
-                boonSummary(s, boonlv, `level-${boonlv}-boon-description`);
-                currentArchs.push(a);
+                if(s != -1){
+                    console.log(s, boonlv);
+                    boonSummary(s, boonlv, d.id);
+                    console.log("is it the second one?");
+                    boonSummary(s, boonlv, `level-${boonlv}-boon-description`);
+                    currentArchs.push(a);
+                }
             }
         }
         let isActive = selected == "SELECT" ? "f" : "t";
@@ -373,166 +391,6 @@ function boonSummary(arch, boonlv, parentElem){
         addElement("dt", b.name, parentElem, []);
         addElement("dd", b.description, parentElem, []);
     }
-}
-
-
-function resetBuilder(){
-    document.body.innerHTML = `    <script src = "js/Main.js"></script>
-    <script src="js/ClassDefinitions.js"></script>
-    <script src="js/Boons.js"></script>
-    <script src="js/Races.js"></script>
-    <script src="js/Archetypes.js"></script>
-    <script src="js/SubArchetypes.js"></script>
-    <script src="js/CharacterBuilder.js"></script>
-    <script src="js/CharacterViewer.js"></script>
-    <script src="js/TitleScreen.js"></script>
-
-    <div id="building-wrapper" class="wrapper">
-        <!-- the tabs at the top of the site -->
-        <div class="tab">
-            <button id="background-tab" class="tablink" onclick="openTab(event, 'background')" complete="f">
-                BACKGROUND
-            </button>
-            <button id="race-tab" class="tablink" onclick="openTab(event, 'race')" complete="f">
-                RACE
-            </button>
-            <button id="noncombat-ability-tab" class="tablink" onclick="openTab(event, 'noncombat-abilities')" complete="f">
-                NONCOMBAT ABILITIES
-            </button>
-            <button id="incombat-ability-tab" class="tablink" onclick="openTab(event, 'incombat-abilities')" complete="f">
-                IN-COMBAT ABILITIES
-            </button>
-            <button class="tablink" onclick="openTab(event, 'archetypes')" complete="f">
-                ARCHETYPES
-            </button>
-            <button class="tablink" onclick="openTab(event, 'spells')" complete="f">
-                SPELLS
-            </button>
-            <button class="tablink" onclick="openTab(event, 'enchantments')" complete="f">
-                ENCHANTMENTS
-            </button>
-            <button class="tablink" onclick="openTab(event, 'save-page')" complete="f">
-                SAVE
-            </button>
-        </div>
-        <!-- Content of the tabs -->
-        <div id="background" class="tabcontent">
-            <div id="name-box">
-                Name: <input id="name-input" required="true" onchange="p.setName()">
-            </div>
-            <div>
-                Backstory: <textarea id="background-input" onchange="p.setBackstory()"></textarea>
-            </div>
-        </div>
-        <div id="race" class="tabcontent"></div>
-        <div id="noncombat-abilities" class="tabcontent">
-            <div id="nc-block" class="inline-block">
-                <div id="nc-left-block" class="left-block">
-                    <div id="noncombat-point-box" class="ability-point-box">
-                        Non-combat Points
-                        <div id="noncombat-point-display" class="ability-point-display">
-                            <span id="noncombat-point-remaining"></span>/<span id="noncombat-point-total"></span>
-                        </div>
-                    </div>
-                    <div id="wild-point-box-nc" class="ability-point-box">
-                        Wild Points
-                        <div id="wild-point-display" class="ability-point-display">
-                            <span id="wild-point-remaining-nc"></span>/<span id="wild-point-total-nc"></span>
-                        </div>
-                    </div>
-                </div>
-                <table id="noncombat-ability-table" class="ability-table">
-                    <thead>
-                        <tr id="noncombat-headings">
-                            <th>Ability</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr id="noncombat-base-scores">
-                            <th>Base Score</th>
-                        </tr>
-                        <!-- <input onchange="p.setNonCombatAbility(5)" type="number" id="cha-input"> -->
-                        <tr id="noncombat-bonuses">
-                            <th>Bonuses</th>
-                        </tr>
-                        <tr id="noncombat-totals">
-                            <th>Total</th>
-                        </tr>
-                        <tfoot>
-                            <tr id="noncombat-modifiers">
-                                <th>Modifier</th>
-                            </tr>
-                        </tfoot>
-                    </tbody>
-                </table>
-                <button id="noncombat-reset-button" class="ability-reset-button" onclick="resetNonCombatAbilities()">RESET ALL ABILITIES</button>
-            </div>
-        </div>
-        <div id="incombat-abilities" class="tabcontent">
-            <div id="ic-block" class="inline-block">
-                <div id="ic-left-block" class="left-block">
-                    <div id="incombat-point-box" class="ability-point-box">
-                        In-combat Points
-                        <div id="incombat-point-display" class="ability-point-display">
-                            <span id="incombat-point-remaining"></span>/<span id="incombat-point-total"></span>
-                        </div>
-                    </div>
-                    <div id="wild-point-box-ic" class="ability-point-box">
-                        Wild Points
-                        <div id="wild-point-display" class="ability-point-display">
-                            <span id="wild-point-remaining-ic"></span>/<span id="wild-point-total-ic"></span>
-                        </div>
-                    </div>
-                </div>
-                <table id="incombat-ability-table" class="ability-table">
-                    <thead>
-                        <tr id="incombat-headings">
-                            <th>Ability</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr id="incombat-base-scores">
-                            <th>Base Score</th>
-                        </tr>
-                        <!-- <input onchange="p.setinCombatAbility(5)" type="number" id="cha-input"> -->
-                        <tr id="incombat-bonuses">
-                            <th>Bonuses</th>
-                        </tr>
-                        <tr id="incombat-totals">
-                            <th>Total</th>
-                        </tr>
-                        <tfoot>
-                            <tr id="incombat-modifiers">
-                                <th>Modifier</th>
-                            </tr>
-                        </tfoot>
-                    </tbody>
-                </table>
-                <button id="incombat-reset-button" class="ability-reset-button" onclick="resetInCombatAbilities()">RESET ALL ABILITIES</button>
-            </div>
-        </div>
-        <div id="archetypes" class="tabcontent">
-            Level
-        </div>
-        <div id="spells" class="tabcontent">
-            SPELLS
-        </div>
-        <div id="enchantments" class="tabcontent">
-            ENCHATNMENTS
-        </div>
-        <div id="save-page" class="tabcontent">
-            Load Character
-            <input id="load-file-input" type="file" onchange="setLoadFile(this)">
-            <button id="load-button" onclick="loadCharacter(); resetBuilder();">LOAD</button>
-            Save Character
-            <input id="save-file-input" type="text" placeholder="Enter name of file + .JSON" onchange="setSaveFile(this)">
-            <button id="save-button" onclick="saveCharacter()">DOWNLOAD</button>
-        </div>
-    </div>`;
-    // this is the only way i could think to do it
-    document.getElementById("style").setAttribute("href", "css/characterBuilder.css");
-    characterBuildInit();
-    document.title = "Kamryn Archives - Character Builder"
 }
 
 function loadBuildCharacter(){

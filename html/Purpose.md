@@ -1,1 +1,0 @@
-The documents in here are deprecated, used only for reference for the reset___ functions.

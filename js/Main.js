@@ -28,6 +28,8 @@ function createJeff(){
     jeff.loadBoons();
     jeff.organiseBoons();
     p = jeff;
+    localStorage.setItem("test", "nooooo");
+    console.log(localStorage.test);
 }
 
 // basic functions
@@ -230,9 +232,12 @@ function loadCharacter(){
     }
     let fr = new FileReader();
     fr.onload = function(){
+        console.log(fr.result);
+        localStorage.setItem("character", fr.result);
         p = new Character(JSON.parse(fr.result));
     }
     fr.readAsText(loadedFile);
+    
 }
 
 // below are functions to help the player load the more complicated attributes

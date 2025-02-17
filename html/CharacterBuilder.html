@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/characterBuilder.css">
+    <link rel="stylesheet" href="../css/characterBuilder.css">
+    <link rel="stylesheet" href="../css/Main.css">
+    <link rel="icon" type="image/x-icon" href="../cosmetic/favicon.png">
     <title>Kamryn Archives - Character Builder</title>
 </head>
-<body onload="createJeff();characterBuildInit()">
-    <script src = "js/Main.js"></script>
-    <script src="js/ClassDefinitions.js"></script>
-    <script src="js/Boons.js"></script>
-    <script src="js/Races.js"></script>
-    <script src="js/Archetypes.js"></script>
-    <script src="js/SubArchetypes.js"></script>
-    <script src="js/CharacterBuilder.js"></script>
+<body onload="characterBuildInit()">
+    <script src = "../js/Main.js"></script>
+    <script src="../js/ClassDefinitions.js"></script>
+    <script src="../js/Boons.js"></script>
+    <script src="../js/Races.js"></script>
+    <script src="../js/Archetypes.js"></script>
+    <script src="../js/SubArchetypes.js"></script>
+    <script src="../js/CharacterBuilder.js"></script>
 
     <div id="building-wrapper" class="wrapper">
         <!-- the tabs at the top of the site -->
@@ -151,7 +153,7 @@
         <div id="save-page" class="tabcontent">
             Load Character
             <input id="load-file-input" type="file" onchange="setLoadFile(this)">
-            <button id="load-button" onclick="loadCharacter();">LOAD</button>
+            <button id="load-button" onclick="loadCharacter(); p = new Character(JSON.parse(localStorage.getItem('character')));">LOAD</button>
             Save Character
             <input id="save-file-input" type="text" placeholder="Enter name of file + .JSON" onchange="setSaveFile(this)">
             <button id="save-button" onclick="saveCharacter()">DOWNLOAD</button>

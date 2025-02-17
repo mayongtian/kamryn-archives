@@ -3,10 +3,23 @@
 /*
 page navigation menu
 */
+@font-face {
+    font-family: Alagard;
+    src: url(../cosmetic/alagard.ttf);
+}
 
-.body{
+body{
     position: absolute;
     z-index: 1;
+    font-family: Alagard;
+}
+
+button{
+    font-family: Alagard;
+}
+
+input{
+    font-family: Alagard;
 }
 
 .menu-block{

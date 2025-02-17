@@ -22,7 +22,7 @@ class Character{
 
     // in order of STR, DEX, CON, INT, WIS, CHA
     /** @type {Number[]} */
-    nonCombatAbilities = [0, 1, 11, 3, 4, 5];
+    nonCombatAbilities = [0, 0, 0, 0, 0, 0];
     /** @type {Number[]} */
     nonCombatAbilityBonuses = [0, 0, 0, 0, 0, 0];
     /** @type {Number[]} */
@@ -30,7 +30,7 @@ class Character{
 
     // in order of POW, SPE, FIN, WIT, PRE, SPL
     /** @type {Number[]} */
-    inCombatAbilities = [0, 1, 2, 3, 10, 11];
+    inCombatAbilities = [0, 0, 0, 0, 0, 0];
     /** @type {Number[]} */
     inCombatAbilityBonuses = [0, 0, 0, 0, 0, 0];
     /** @type {Number[]} */

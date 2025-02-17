@@ -5,6 +5,7 @@ Kamryn Archives is a HTML-based local character builder for the Kamryn Chronicle
 ## Usage notes
 
 ### Actual Instructions
+Download the code as a .zip file, and extract it into a directory of your choice. It does not work when not extracted.
 Open KamrynArchives.html. It will lead you to the right places. Don't mess with anything else.
 
 ### File-Handling
@@ -13,6 +14,7 @@ Because of JavaScript's bullshit issues in handling files, the file will always 
 
 ## Architecture notes
 ### Tedious Data input
+I realised that all the traits require too much shit to make a python script handling it. Helpers will need some sort of coding acumen. 
 
 ### TODO priority list
 - make the HTML documents link properly
@@ -36,7 +38,7 @@ Because of JavaScript's bullshit issues in handling files, the file will always 
 - enchantments do not exist
 - formatting is cringe
 
-### Recruiting friends to help input missing Kamryn content into the file - I'll eventually write up a python script to aid with it
+### Recruiting friends to help input missing Kamryn content into the file - data entry tasks in priority
 
 ## Bugs
 ### File Handling
