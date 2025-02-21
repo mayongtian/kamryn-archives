@@ -13,18 +13,18 @@ const Paladin = new SubArchetype(
         [1, [Oath]],
         [4, [PledgeA, PledgeP]],
         [8, [Faith]],
-        [12, [ShieldOfTheFaithful]],
-        [16, [ShieldOfTheUnbroken]],
+        [12, [ShieldOfFaithful]],
+        [16, [ShieldOfUnbroken]],
         [20, [Guidance]],
         [24, [PaladinsVow]],
         [28, [Divinity]],
         [32, [HolyFire]],
-        [36, [ShieldOfTheDivine]],
+        [36, [ShieldOfDivine]],
         [40, [HolyAura]],
         [44, [Apostleship]],
         [48, [TheLordsProtector]],
         [52, [HolyKinship]],
-        [56, [MessengerForTheHeavensDivineFavour]],
+        [56, [MessengerForHeavensDivineFavour]],
         [60, [Ascension, TankAscension]]
     ]
 );
